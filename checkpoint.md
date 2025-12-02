@@ -40,10 +40,124 @@ Building a modern news website with role-based authentication, manual CMS, and r
 
 ## Current Status
 **Phase:** ✅ MVP Complete - Production Ready with All Enhancements  
-**Last Updated:** December 2, 2025 - All Systems Verified and Working
-**Test Articles:** 13 articles available
+**Last Updated:** December 2, 2025 - Category Filtering Fixed & Sections Improved
+**Test Articles:** 32 articles available across all categories
 **Admin Access:** `/admin/login` (admin/admin123)
 **Status:** ✅ All functionality tested and verified working correctly
+
+## 🔧 Recent Fixes (December 2, 2025)
+
+### ✅ Category Filtering Issue - FIXED
+**Problem:** Category filter buttons were not filtering articles properly
+**Root Cause:** Database had mixed category values (capitalized: "Culture", "Agriculture" vs lowercase: "local", "regional")
+**Solution:** 
+- Created migration script (`fix_categories.js`) to standardize all category values to lowercase
+- Mapped old categories to new standard categories:
+  - Culture, Crime, Education, Infrastructure → local
+  - Agriculture → regional  
+  - Sports → sports
+  - Entertainment → entertainment
+  - Business → business
+  - National → national
+- Updated 12 articles to use correct category values
+**Result:** ✅ Category filtering now works perfectly - verified via API and UI testing
+
+### ✅ Demo Articles Added
+**Task:** Add one article per category for testing
+**Implementation:**
+- Created `seed_articles.js` script with demo articles
+- Added articles for all 6 categories:
+  - Local: Diwali Festival Celebration
+  - Regional: Water Conservation Project  
+  - National: Renewable Energy Record
+  - Sports: Swimming Championship Qualification
+  - Entertainment: Marathi Film Festival
+  - Business: Cooperative Bank Profits
+**Result:** ✅ All categories now have multiple articles for testing (13 local, 6 regional, 3 national, 4 sports, 3 entertainment, 3 business)
+
+### ✅ Section Names Improved
+**Changes:**
+- "Trending Now" → "Trending News"
+- "Latest Stories" → "Recent News"
+**Location:** `/app/app/page.js` (lines 469-474 and 516-519)
+**Result:** ✅ More professional and consistent section naming
+
+## 📋 Complete Workflow Steps
+
+### Step 1: Environment Setup
+```bash
+cd /app/newa-main
+cp -r * /app/
+cd /app
+yarn install
+```
+
+### Step 2: Database Connection
+- MongoDB Atlas connection string in `.env`
+- Database name: `shrigonda_news`
+- Collections: `users`, `news`, `notifications`, `categories`
+
+### Step 3: Category Data Migration
+```bash
+node fix_categories.js
+```
+- Standardizes all article categories to lowercase
+- Maps old category names to new standard categories
+- Verifies distribution across all 6 categories
+
+### Step 4: Seed Demo Articles
+```bash
+node seed_articles.js
+```
+- Adds one demo article per category
+- Ensures all categories have content for testing
+- Generates unique IDs and realistic metadata
+
+### Step 5: Start Next.js Server
+```bash
+# Via supervisor (recommended)
+sudo supervisorctl stop frontend
+sudo supervisorctl start nextjs
+sudo supervisorctl status
+
+# Or manually
+yarn dev
+```
+
+### Step 6: Verify Category Filtering
+```bash
+# Test API endpoints
+curl http://localhost:3000/api/categories
+curl http://localhost:3000/api/news?category=local
+curl http://localhost:3000/api/news?category=sports
+
+# Visit frontend and test buttons
+# http://localhost:3000
+```
+
+### Step 7: Test All Features
+1. **Homepage:** Breaking news carousel, category buttons, sections
+2. **Category Filtering:** Click each category button (Local News, Regional, National, Sports, Entertainment, Business)
+3. **Search:** Enter keywords in search bar
+4. **Article Pages:** Click "Read Full Story" or any article card
+5. **Social Sharing:** Test Facebook, Twitter, LinkedIn buttons
+6. **Admin Portal:** Login at `/admin/login` with admin/admin123
+
+## 🎯 Verification Checklist
+
+- [x] All 6 categories have articles
+- [x] Category filter buttons highlight when selected
+- [x] Clicking category button filters articles correctly
+- [x] "All News" button shows all articles
+- [x] "Trending News" section displays (shows articles 6-8)
+- [x] "Recent News" section displays (shows articles 9+)
+- [x] Breaking news carousel auto-rotates
+- [x] Breaking news ticker scrolls continuously
+- [x] Search functionality works
+- [x] Article pages load correctly
+- [x] Social sharing opens dialogs
+- [x] Admin login works
+- [x] Create/Edit/Delete articles functional
 
 ## Latest Enhancements ✨ (December 2024)
 
