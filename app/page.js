@@ -513,10 +513,10 @@ function HomeContent() {
         </section>
       )}
 
-      {/* Regular Articles */}
+      {/* Recent News */}
       {regularArticles.length > 0 && (
         <section className="container py-12 bg-muted/20">
-          <h2 className="text-3xl font-bold mb-8">Latest Stories</h2>
+          <h2 className="text-3xl font-bold mb-8">Recent News</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {regularArticles.map((article, idx) => (
               <motion.div
