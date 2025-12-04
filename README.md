@@ -1,190 +1,203 @@
-# I Love Shrigonda News - Modern News Website
+# Shrigonda News
 
-A complete, full-featured news website with admin CMS, role-based authentication, and real-time notifications.
+A modern, full-stack news platform built with Next.js and MongoDB.
 
-## 🚀 Quick Start
+## Features
 
-### Access the Application:
-- **Public Website:** https://event-debug.preview.emergentagent.com
-- **Admin Portal:** https://event-debug.preview.emergentagent.com/admin/login
-- **Credentials:** `admin` / `admin123`
+- 📰 **News Management**: Create, edit, and publish news articles
+- 🔐 **Authentication**: Secure JWT-based authentication system
+- 👥 **User Roles**: Admin and Editor roles with different permissions
+- 📱 **Responsive Design**: Mobile-friendly interface
+- 🎨 **Modern UI**: Built with Radix UI and Tailwind CSS
+- 🔔 **Notifications**: Real-time notification system
+- 🏷️ **Categories & Tags**: Organize content with categories and tags
+- 📊 **Admin Dashboard**: Comprehensive admin panel for content management
 
-### Local Development:
+## Tech Stack
+
+- **Frontend**: Next.js 14 (App Router), React 18, Tailwind CSS
+- **Backend**: Next.js API Routes
+- **Database**: MongoDB
+- **Authentication**: JWT (JSON Web Tokens)
+- **UI Components**: Radix UI, Lucide Icons
+- **Forms**: React Hook Form with Zod validation
+
+## Prerequisites
+
+- Node.js >= 18.0.0
+- npm >= 9.0.0
+- MongoDB database (local or MongoDB Atlas)
+
+## Getting Started
+
+### 1. Clone the repository
+
 ```bash
-# Start development server
-yarn dev
-
-# Restart services
-sudo supervisorctl restart nextjs
+git clone <your-repo-url>
+cd TestingNews
 ```
 
-## ✨ Features
+### 2. Install dependencies
 
-### Public Website:
-- ✅ Dynamic breaking news carousel (auto-rotates every 5s)
-- ✅ Breaking news ticker with continuous scroll
-- ✅ Category filtering (6 categories)
-- ✅ Search functionality
-- ✅ **Individual article pages with full content**
-- ✅ **Clickable article cards**
-- ✅ Social sharing (Facebook, Twitter, LinkedIn)
-- ✅ Real-time notifications
-- ✅ Related articles recommendation
-- ✅ View counter
-- ✅ Responsive design
-
-### Admin Dashboard:
-- ✅ Create, edit, delete articles
-- ✅ Category management
-- ✅ Tag system
-- ✅ View statistics
-- ✅ Role-based permissions (Admin/Editor)
-
-## 📁 Project Structure
-
-```
-/app/
-├── app/
-│   ├── page.js                      # Homepage
-│   ├── article/[id]/page.js         # Article detail page (NEW)
-│   ├── api/[[...path]]/route.js     # Backend API
-│   └── globals.css                  # Theme & styles
-├── lib/
-│   ├── mongodb.js                   # Database connection
-│   └── auth.js                      # JWT authentication
-├── .env                             # Environment variables
-└── package.json                     # Dependencies
+```bash
+npm install
 ```
 
-## 🎨 Theme
-- **Primary:** Red (#DC2626)
-- **Backgrounds:** Black and White
-- **Animations:** Framer Motion throughout
+### 3. Set up environment variables
 
-## 🔧 Configuration
+Create a `.env` file in the root directory:
 
-### Environment Variables (`.env`):
+```bash
+cp .env.example .env
 ```
-MONGO_URL=mongodb://localhost:27017
+
+Update the `.env` file with your configuration:
+
+```env
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/?appName=YourApp
 DB_NAME=shrigonda_news
-NEXT_PUBLIC_BASE_URL=https://event-debug.preview.emergentagent.com
-JWT_SECRET=your-secret-key
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+CORS_ORIGINS=*
+JWT_SECRET=your-super-secret-jwt-key-change-this
+PORT=3000
 ```
 
-### Database:
-- **Database:** shrigonda_news
-- **Collections:** users, news, notifications
+### 4. Run the development server
 
-## 🎯 How It Works
+```bash
+npm run dev
+```
 
-### Reading Articles:
-1. Visit homepage → Browse breaking news and article grid
-2. Click any article card → Opens `/article/[id]` with full content
-3. Read complete article with proper formatting
-4. Share on social media or view related articles
-5. Click "Back to Home" to return
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Creating Content (Admin):
-1. Login at `/admin/login`
-2. Click "Create New Article"
-3. Fill in details (title, content, category, image, tags)
-4. Submit → Article appears on homepage
-5. Notification created automatically
+### 5. Default Admin Credentials
 
-## 📊 API Endpoints
+```
+Username: admin
+Password: admin123
+```
 
-### Public (No Auth):
-- `GET /api/news` - Get all published articles
-- `GET /api/news/:id` - Get single article (increments view count)
+**⚠️ Important**: Change these credentials immediately after first login!
+
+## Project Structure
+
+```
+/
+├── app/                    # Next.js app directory
+│   ├── api/               # API routes
+│   ├── admin/             # Admin pages
+│   ├── article/           # Article pages
+│   ├── layout.js          # Root layout
+│   └── page.js            # Home page
+├── components/            # React components
+├── lib/                   # Utility functions
+│   ├── mongodb.js        # Database connection
+│   └── auth.js           # Authentication utilities
+├── hooks/                 # Custom React hooks
+├── public/               # Static assets
+├── scripts/              # Utility scripts
+├── docs/                 # Documentation
+└── tests/                # Test files
+```
+
+## Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm start` - Start production server
+- `npm run lint` - Run ESLint
+
+## API Endpoints
+
+### Public Endpoints
+- `GET /api/news` - Get published news articles
+- `GET /api/news/:id` - Get single article
 - `GET /api/categories` - Get all categories
-- `GET /api/notifications` - Get recent notifications
-
-### Protected (Require JWT):
 - `POST /api/auth/login` - User login
-- `POST /api/news` - Create article (Editor+)
-- `PUT /api/news/:id` - Update article (Editor+)
+
+### Protected Endpoints (Require Authentication)
+- `POST /api/news` - Create article (Editor/Admin)
+- `PUT /api/news/:id` - Update article (Editor/Admin)
 - `DELETE /api/news/:id` - Delete article (Admin only)
+- `GET /api/admin/articles` - Get all articles (Editor/Admin)
+- `POST /api/users` - Create user (Admin only)
 
-## 🧪 Testing
+## Database Collections
 
-### Test Articles:
-5 sample articles are pre-loaded in the database covering all categories.
+### news
+- Articles with title, content, category, tags, author, status, views
 
-### Test Navigation:
+### users
+- User accounts with username, email, password (hashed), role
+
+### categories
+- News categories with id, name, icon, order
+
+### notifications
+- System notifications for new articles and updates
+
+## Deployment
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions.
+
+### Quick Deploy to Vercel
+
 ```bash
-# Get all articles
-curl http://localhost:3000/api/news
-
-# Get specific article
-curl http://localhost:3000/api/news/article-1
-
-# Test view counter (increments on each call)
-curl http://localhost:3000/api/news/article-2
+npm install -g vercel
+vercel --prod
 ```
 
-## 🐛 Troubleshooting
+## Environment Variables
 
-### Articles not showing?
-```bash
-# Check database
-mongosh mongodb://localhost:27017/shrigonda_news --eval 'db.news.find().count()'
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `MONGODB_URI` | MongoDB connection string | Yes | - |
+| `DB_NAME` | Database name | Yes | - |
+| `JWT_SECRET` | Secret key for JWT | Yes | - |
+| `NEXT_PUBLIC_BASE_URL` | Application base URL | Yes | - |
+| `CORS_ORIGINS` | Allowed CORS origins | No | `*` |
+| `PORT` | Server port | No | `3000` |
+| `NODE_ENV` | Environment mode | No | `development` |
 
-# Verify .env has correct DB_NAME
-cat /app/.env | grep DB_NAME
+## Security
 
-# Should be: DB_NAME=shrigonda_news
-```
+- JWT-based authentication
+- Password hashing with bcrypt
+- CORS protection
+- Security headers (CSP, XSS Protection, etc.)
+- Input validation with Zod
+- MongoDB injection prevention
 
-### Server issues?
-```bash
-# Check status
-sudo supervisorctl status
+## Performance
 
-# Restart service
-sudo supervisorctl restart nextjs
+- Next.js standalone output for optimized builds
+- Efficient MongoDB queries with proper indexing
+- Image optimization
+- Code splitting and lazy loading
+- Production-ready caching headers
 
-# Check logs
-tail -n 100 /var/log/supervisor/nextjs*.log
-```
+## Contributing
 
-## 📖 Documentation
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-- **`CHECKPOINT.md`** - Complete project documentation
-- **`HANDOFF_PROMPT.md`** - Agent handoff guide
+## License
 
-## 🎓 Tech Stack
+This project is private and proprietary.
 
-- **Frontend:** Next.js 14, React 18, Tailwind CSS
-- **UI:** Shadcn UI, Framer Motion
-- **Backend:** Next.js API Routes
-- **Database:** MongoDB
-- **Auth:** JWT with bcrypt
+## Support
 
-## ✅ Status
+For support and questions, please contact the development team.
 
-**All features implemented and working:**
-- ✅ Article navigation functional
-- ✅ Full article pages display correctly
-- ✅ Social sharing working
-- ✅ View counter increments
-- ✅ Admin CMS functional
-- ✅ Real-time notifications working
-- ✅ Responsive on all devices
+## Changelog
 
-## 🚀 Recent Updates
-
-### Latest (v2.0):
-- Created individual article detail pages at `/article/[id]`
-- Made all article cards clickable
-- Added full content display with proper formatting
-- Implemented related articles feature
-- Added "Back to Home" navigation
-- Fixed database connection issue (DB_NAME configuration)
-- Pre-loaded 5 sample articles
-
----
-
-**Version:** 2.0  
-**Last Updated:** January 2025  
-**Status:** ✅ Production Ready
-
+### Version 1.0.0
+- Initial production release
+- Complete news management system
+- User authentication and authorization
+- Admin dashboard
+- Category and tag management
+- Notification system
