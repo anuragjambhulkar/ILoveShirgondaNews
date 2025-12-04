@@ -364,8 +364,13 @@ async function handleAdminGetArticles(request) {
 }
 
 /* ------------------------- Main Route Handler ------------------------- */
+let adminInitialized = false;
+
 async function handleRoute(request, { params }) {
-  await initializeAdmin();
+  if (!adminInitialized) {
+    await initializeAdmin();
+    adminInitialized = true;
+  }
 
   const { path = [] } = params || {};
   const route = `/${path.join('/')}`;
