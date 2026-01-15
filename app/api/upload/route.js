@@ -5,8 +5,7 @@ import { mkdir } from 'fs/promises';
 
 // Add CORS headers
 function handleCORS(response) {
-  const origin = process.env.CORS_ORIGINS || '*';
-  response.headers.set('Access-Control-Allow-Origin', origin);
+  response.headers.set('Access-Control-Allow-Origin', '*');
   response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
   response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   response.headers.set('Access-Control-Allow-Credentials', 'true');
@@ -50,7 +49,7 @@ export async function POST(request) {
     const filename = `${Date.now()}-${sanitizedName}`;
     const uploadsDir = path.join(process.cwd(), 'public/uploads');
     const imagePath = path.join(uploadsDir, filename);
-    
+
     // Make sure the uploads directory exists
     await mkdir(uploadsDir, { recursive: true });
 

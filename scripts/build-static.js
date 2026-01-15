@@ -2,42 +2,70 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-// This script prepares a static build for Hostasia while pointing to the Vercel API
 const VERCEL_URL = process.argv[2];
 
 if (!VERCEL_URL) {
     console.error('Usage: node scripts/build-static.js <VERCEL_API_URL>');
-    console.error('Example: node scripts/build-static.js https://shrigonda-news-api.vercel.app');
+    console.error('Example: node scripts/build-static.js https://shrigonda-news.vercel.app');
     process.exit(1);
 }
 
-console.log(`🚀 Preparing static build pointing to: ${VERCEL_URL}`);
+const rootDir = process.cwd();
+const configPath = path.join(rootDir, 'next.config.js');
+const apiDir = path.join(rootDir, 'app', 'api');
+const apiBackupDir = path.join(rootDir, 'app', '_api_backup');
 
-// 1. Update next.config.js for static export
-const configPath = path.join(process.cwd(), 'next.config.js');
-let configContent = fs.readFileSync(configPath, 'utf8');
+console.log(`🚀 Starting Static Build Flow...`);
+console.log(`🔗 API URL: ${VERCEL_URL}`);
 
-// Temporarily change output to 'export' if it's 'standalone'
-const modifiedConfig = configContent.replace("output: 'standalone'", "output: 'export'");
+// 1. Setup Config
+console.log('📝 Modifying next.config.js for export...');
+let originalConfig = fs.readFileSync(configPath, 'utf8');
+let modifiedConfig = originalConfig;
+
+// Ensure output: 'export' is set
+if (modifiedConfig.includes("output: 'standalone'")) {
+    modifiedConfig = modifiedConfig.replace("output: 'standalone'", "output: 'export'");
+} else if (!modifiedConfig.includes("output: 'export'")) {
+    // Inject it if not present
+    modifiedConfig = modifiedConfig.replace("const nextConfig = {", "const nextConfig = {\n  output: 'export',");
+}
+
 fs.writeFileSync(configPath, modifiedConfig);
 
-try {
-    // 2. Run the build with the environment variable
-    console.log('🏗️ Building Next.js app...');
-    execSync(`npx cross-env NEXT_PUBLIC_BASE_URL=${VERCEL_URL} next build`, { stdio: 'inherit' });
-    console.log('✅ Build successful! Static files are in the "out" directory.');
+// 2. Handle API Directory (Next.js export doesn't allow API routes)
+let apiMoved = false;
+if (fs.existsSync(apiDir)) {
+    console.log('📦 Temporarily moving app/api to app/_api_backup...');
+    fs.renameSync(apiDir, apiBackupDir);
+    apiMoved = true;
+}
 
-    // 3. Inform about the next steps
-    console.log('\n--- NEXT STEPS ---');
+try {
+    // 3. Run Build
+    console.log('🏗️ Running: npx next build...');
+    // We use npx cross-env to set the API URL for the static build
+    execSync(`npx cross-env NEXT_PUBLIC_BASE_URL=${VERCEL_URL} npx next build`, {
+        stdio: 'inherit',
+        env: { ...process.env, NEXT_PUBLIC_BASE_URL: VERCEL_URL }
+    });
+
+    console.log('\n✅ BUILD SUCCESSFUL!');
+    console.log('--------------------------------------------------');
+    console.log('The static files are ready in the "out" folder.');
     console.log('1. Zip the contents of the "out" folder.');
-    console.log('2. Upload the zip to your Hostasia cPanel (public_html or subdomain folder).');
-    console.log('3. Extract the files.');
-    console.log('------------------');
+    console.log('2. Upload to your Hostasia cPanel public_html.');
+    console.log('--------------------------------------------------');
 
 } catch (error) {
-    console.error('❌ Build failed:', error.message);
+    console.error('\n❌ BUILD FAILED');
+    console.error(error.message);
 } finally {
-    // 4. Restore next.config.js
-    fs.writeFileSync(configPath, configContent);
-    console.log('📝 Restored next.config.js');
+    // 4. Restore everything
+    console.log('🔄 Restoring files...');
+    fs.writeFileSync(configPath, originalConfig);
+    if (apiMoved && fs.existsSync(apiBackupDir)) {
+        fs.renameSync(apiBackupDir, apiDir);
+    }
+    console.log('✨ All files restored.');
 }

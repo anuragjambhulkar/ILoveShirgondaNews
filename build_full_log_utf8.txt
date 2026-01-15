@@ -1,0 +1,37 @@
+﻿  Γû▓ Next.js 14.2.3
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+node.exe : 
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program 
+Files\nodejs/node_mo ...
++ 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteExcep 
+   tion
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+> Build error occurred
+Error: Page "/article/[id]" is missing "generateStaticParams()" so it 
+cannot be used with "output: export" config.
+    at C:\Users\jambh\Desktop\FreeLanceing\TestingNews\node_modules\ne
+xt\dist\build\index.js:1294:59
+    at process.processTicksAndRejections 
+(node:internal/process/task_queues:105:5)
+    at async Span.traceAsyncFn (C:\Users\jambh\Desktop\FreeLanceing\Te
+stingNews\node_modules\next\dist\trace\trace.js:154:20)
+    at async Promise.all (index 6)
+    at async C:\Users\jambh\Desktop\FreeLanceing\TestingNews\node_modu
+les\next\dist\build\index.js:1172:17
+    at async Span.traceAsyncFn (C:\Users\jambh\Desktop\FreeLanceing\Te
+stingNews\node_modules\next\dist\trace\trace.js:154:20)
+    at async C:\Users\jambh\Desktop\FreeLanceing\TestingNews\node_modu
+les\next\dist\build\index.js:1095:124
+    at async Span.traceAsyncFn (C:\Users\jambh\Desktop\FreeLanceing\Te
+stingNews\node_modules\next\dist\trace\trace.js:154:20)
+    at async build (C:\Users\jambh\Desktop\FreeLanceing\TestingNews\no
+de_modules\next\dist\build\index.js:366:9)

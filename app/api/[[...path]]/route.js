@@ -13,8 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 /* ---------------------------- Helper: CORS ---------------------------- */
 function handleCORS(response) {
-  const origin = process.env.CORS_ORIGINS || '*';
-  response.headers.set('Access-Control-Allow-Origin', origin);
+  response.headers.set('Access-Control-Allow-Origin', '*');
   response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
   response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   response.headers.set('Access-Control-Allow-Credentials', 'true');

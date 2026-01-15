@@ -52,7 +52,8 @@ function HomeContent() {
 
   const loadCategories = async () => {
     try {
-      const res = await fetch('/api/categories');
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+      const res = await fetch(`${baseUrl}/api/categories`);
       const data = await res.json();
       if (res.ok) {
         setCategories(data.categories || []);
@@ -66,7 +67,8 @@ function HomeContent() {
 
   const loadArticles = async () => {
     try {
-      const res = await fetch('/api/news');
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+      const res = await fetch(`${baseUrl}/api/news`);
       const data = await res.json();
       if (res.ok) {
         const sortedArticles = (data.articles || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -82,7 +84,8 @@ function HomeContent() {
 
   const loadNotifications = async () => {
     try {
-      const res = await fetch('/api/notifications');
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+      const res = await fetch(`${baseUrl}/api/notifications`);
       const data = await res.json();
       const unreadNotifs = (data.notifications || []).filter(n => !n.read);
       setNotifications(unreadNotifs);
