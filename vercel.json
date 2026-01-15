@@ -1,13 +1,8 @@
 {
     "version": 2,
     "framework": "nextjs",
-    "regions": [
-        "bom1"
-    ],
     "env": {
-        "MONGODB_URI": "@mongodb-uri",
         "DB_NAME": "shrigonda_news",
-        "JWT_SECRET": "@jwt-secret",
         "CORS_ORIGINS": "https://news.iloveshrigonda.com"
     }
 }
