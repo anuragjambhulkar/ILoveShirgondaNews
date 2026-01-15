@@ -22,7 +22,8 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/auth/login', {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+      const res = await fetch(`${baseUrl}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -55,9 +56,9 @@ export default function AdminLoginPage() {
         <Card className="w-[400px] shadow-2xl border-red-900/20">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <img 
-                src="https://customer-assets.emergentagent.com/job_754a0040-d589-4dfd-90f1-615496373220/artifacts/7inmznbe_logo.jpg" 
-                alt="I Love Shrigonda News" 
+              <img
+                src="https://customer-assets.emergentagent.com/job_754a0040-d589-4dfd-90f1-615496373220/artifacts/7inmznbe_logo.jpg"
+                alt="I Love Shrigonda News"
                 className="h-20 w-auto"
               />
             </div>

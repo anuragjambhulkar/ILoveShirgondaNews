@@ -3,13 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { 
-  PlusCircle, 
-  Edit, 
-  Trash2, 
-  LogOut, 
-  FileText, 
-  Users, 
+import {
+  PlusCircle,
+  Edit,
+  Trash2,
+  LogOut,
+  FileText,
+  Users,
   TrendingUp,
   Eye,
   Save,
@@ -51,18 +51,19 @@ export default function AdminDashboard() {
   const checkAuth = () => {
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
-    
+
     if (!token || !userData) {
       router.push('/admin/login');
       return;
     }
-    
+
     setUser(JSON.parse(userData));
   };
 
   const loadCategories = async () => {
     try {
-      const res = await fetch('/api/categories');
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+      const res = await fetch(`${baseUrl}/api/categories`);
       const data = await res.json();
       if (res.ok) {
         setCategories(data.categories || []);
@@ -75,12 +76,13 @@ export default function AdminDashboard() {
   const loadArticles = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('/api/admin/articles', {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+      const res = await fetch(`${baseUrl}/api/admin/articles`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (res.ok) {
         const data = await res.json();
         setArticles(data.articles || []);
@@ -104,7 +106,8 @@ export default function AdminDashboard() {
     uploadFormData.append('file', file);
 
     try {
-      const res = await fetch('/api/upload', {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+      const res = await fetch(`${baseUrl}/api/upload`, {
         method: 'POST',
         body: uploadFormData,
       });
@@ -125,12 +128,13 @@ export default function AdminDashboard() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       const token = localStorage.getItem('token');
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
       const method = editingArticle ? 'PUT' : 'POST';
-      const url = editingArticle ? `/api/news/${editingArticle.id}` : '/api/news';
-      
+      const url = editingArticle ? `${baseUrl}/api/news/${editingArticle.id}` : `${baseUrl}/api/news`;
+
       const res = await fetch(url, {
         method,
         headers: {
@@ -142,7 +146,7 @@ export default function AdminDashboard() {
           tags: formData.tags ? formData.tags.split(',').map(t => t.trim()) : []
         })
       });
-      
+
       if (res.ok) {
         toast.success(editingArticle ? 'Article updated!' : 'Article created!');
         setShowEditor(false);
@@ -180,16 +184,17 @@ export default function AdminDashboard() {
 
   const handleDelete = async (articleId) => {
     if (!confirm('Are you sure you want to delete this article?')) return;
-    
+
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`/api/news/${articleId}`, {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+      const res = await fetch(`${baseUrl}/api/news/${articleId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (res.ok) {
         toast.success('Article deleted');
         loadArticles();
@@ -215,9 +220,9 @@ export default function AdminDashboard() {
       <header className="border-b bg-black text-white">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-4">
-            <img 
-              src="https://customer-assets.emergentagent.com/job_754a0040-d589-4dfd-90f1-615496373220/artifacts/7inmznbe_logo.jpg" 
-              alt="I Love Shrigonda News" 
+            <img
+              src="https://customer-assets.emergentagent.com/job_754a0040-d589-4dfd-90f1-615496373220/artifacts/7inmznbe_logo.jpg"
+              alt="I Love Shrigonda News"
               className="h-10 w-auto"
             />
             <div>
@@ -225,7 +230,7 @@ export default function AdminDashboard() {
               <p className="text-xs text-gray-400">Welcome, {user.username}</p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={() => router.push('/')} className="border-white/20 text-white hover:bg-white/10">
               View Site
@@ -250,7 +255,7 @@ export default function AdminDashboard() {
               <div className="text-2xl font-bold text-primary">{stats.total}</div>
             </CardContent>
           </Card>
-          
+
           <Card className="border-primary/20">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Published</CardTitle>
@@ -260,7 +265,7 @@ export default function AdminDashboard() {
               <div className="text-2xl font-bold text-primary">{stats.published}</div>
             </CardContent>
           </Card>
-          
+
           <Card className="border-primary/20">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Total Views</CardTitle>
@@ -289,23 +294,23 @@ export default function AdminDashboard() {
                   {editingArticle ? 'Edit Article' : 'Create New Article'}
                 </DialogTitle>
               </DialogHeader>
-              
+
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <Label htmlFor="title">Title</Label>
                   <Input
                     id="title"
                     value={formData.title}
-                    onChange={(e) => setFormData({...formData, title: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     required
                   />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="category">Category</Label>
-                  <Select 
-                    value={formData.category} 
-                    onValueChange={(value) => setFormData({...formData, category: value})}
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) => setFormData({ ...formData, category: value })}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -317,7 +322,7 @@ export default function AdminDashboard() {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="image-upload">Image</Label>
                   <Input
@@ -335,45 +340,45 @@ export default function AdminDashboard() {
                         variant="destructive"
                         size="icon"
                         className="absolute top-2 right-2"
-                        onClick={() => setFormData({...formData, image: ''})}
+                        onClick={() => setFormData({ ...formData, image: '' })}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   )}
                 </div>
-                
+
                 <div>
                   <Label htmlFor="excerpt">Excerpt (Brief summary)</Label>
                   <Textarea
                     id="excerpt"
                     rows={2}
                     value={formData.excerpt}
-                    onChange={(e) => setFormData({...formData, excerpt: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
                   />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="content">Content</Label>
                   <Textarea
                     id="content"
                     rows={12}
                     value={formData.content}
-                    onChange={(e) => setFormData({...formData, content: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                     required
                   />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="tags">Tags (comma separated)</Label>
                   <Input
                     id="tags"
                     placeholder="politics, breaking, maharashtra"
                     value={formData.tags}
-                    onChange={(e) => setFormData({...formData, tags: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
                   />
                 </div>
-                
+
                 <div className="flex gap-2">
                   <Button type="submit" className="bg-primary hover:bg-primary/90">
                     <Save className="h-4 w-4 mr-2" />
@@ -423,7 +428,7 @@ export default function AdminDashboard() {
                         </span>
                       </div>
                     </div>
-                    
+
                     <div className="flex gap-2 ml-4">
                       <Button variant="outline" size="sm" onClick={() => handleEdit(article)} className="hover:border-primary hover:text-primary">
                         <Edit className="h-4 w-4" />

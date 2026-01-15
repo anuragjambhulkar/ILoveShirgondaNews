@@ -2,7 +2,6 @@
     "version": 2,
     "framework": "nextjs",
     "env": {
-        "DB_NAME": "shrigonda_news",
-        "CORS_ORIGINS": "https://news.iloveshrigonda.com"
+        "DB_NAME": "shrigonda_news"
     }
 }
