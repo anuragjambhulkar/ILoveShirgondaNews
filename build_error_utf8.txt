@@ -1,0 +1,89 @@
+﻿  Γû▓ Next.js 14.2.3
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+node.exe : 
+At line:1 char:1
++ & "C:\Program Fil
+es\nodejs/node.exe"
+ "C:\Program Files\
+nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~
+    + CategoryInfo 
+             : No  
+  tSpecified: (:   
+ String) [], Re    
+moteException
+    + FullyQualifi 
+   edErrorId : Na  
+  tiveCommandErr   
+ or
+ 
+> Build error 
+occurred
+Error: Page 
+"/article/[id]" is 
+missing "generateSt
+aticParams()" so 
+it cannot be used 
+with "output: 
+export" config.
+    at C:\Users\jam
+bh\Desktop\FreeLanc
+eing\TestingNews\no
+de_modules\next\dis
+t\build\index.js:12
+94:59
+    at process.proc
+essTicksAndRejectio
+ns (node:internal/p
+rocess/task_queues:
+105:5)
+    at async 
+Span.traceAsyncFn (
+C:\Users\jambh\Desk
+top\FreeLanceing\Te
+stingNews\node_modu
+les\next\dist\trace
+\trace.js:154:20)
+    at async 
+Promise.all (index 
+8)
+    at async C:\Use
+rs\jambh\Desktop\Fr
+eeLanceing\TestingN
+ews\node_modules\ne
+xt\dist\build\index
+.js:1172:17
+    at async 
+Span.traceAsyncFn (
+C:\Users\jambh\Desk
+top\FreeLanceing\Te
+stingNews\node_modu
+les\next\dist\trace
+\trace.js:154:20)
+    at async C:\Use
+rs\jambh\Desktop\Fr
+eeLanceing\TestingN
+ews\node_modules\ne
+xt\dist\build\index
+.js:1095:124
+    at async 
+Span.traceAsyncFn (
+C:\Users\jambh\Desk
+top\FreeLanceing\Te
+stingNews\node_modu
+les\next\dist\trace
+\trace.js:154:20)
+    at async build 
+(C:\Users\jambh\Des
+ktop\FreeLanceing\T
+estingNews\node_mod
+ules\next\dist\buil
+d\index.js:366:9)

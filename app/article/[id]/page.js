@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
@@ -38,7 +38,8 @@ export default function ArticlePage() {
   const loadArticle = async (articleId) => {
     try {
       setLoading(true);
-      const res = await fetch(`/api/news/${articleId}`);
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+      const res = await fetch(`${baseUrl}/api/news/${articleId}`);
       const data = await res.json();
 
       if (res.ok && data.article) {
@@ -57,10 +58,10 @@ export default function ArticlePage() {
     }
   };
 
-  // 🔹 Load related stories
   const loadRelatedArticles = async (category, currentId) => {
     try {
-      const res = await fetch(`/api/news?category=${category}`);
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+      const res = await fetch(`${baseUrl}/api/news?category=${category}`);
       const data = await res.json();
       if (res.ok) {
         setRelatedArticles(
