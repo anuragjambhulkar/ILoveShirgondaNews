@@ -1,0 +1,52 @@
+name: 🚀 Deploy to Hostasia
+
+on:
+  push:
+    branches:
+      - main  # Trigger on pushes to the main branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚚 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Install Dependencies
+        run: npm install
+
+      - name: 🏗️ Build Static Site
+        run: node scripts/build-static.js ${{ secrets.VERCEL_API_URL }}
+
+      - name: 🤐 Zip Build Folder
+        run: |
+          cd out
+          zip -r ../shrigonda_news_production.zip .
+          cd ..
+
+      - name: 📤 Upload to FTP (Zip & Extractor)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: ${{ secrets.FTP_TARGET_DIR }}
+          exclude: |
+            **/*
+            !shrigonda_news_production.zip
+            !extract.php
+
+      - name: ⚡ Trigger Extraction & Cleanup
+        run: |
+          # Trigger extraction and tell the script to delete itself and the zip
+          curl -s "${{ secrets.DEPLOY_URL }}/extract.php?run=1&cleanup=1" | grep "Extraction Successful" || (echo "Extraction Failed" && exit 1)
+
+      - name: 🎉 Success
+        run: echo "Deployment finished successfully and server cleaned!"
