@@ -104,18 +104,24 @@ function HomeContent() {
     let filtered = articles;
 
     if (selectedCategory !== 'all') {
-      filtered = filtered.filter(a => a.category === selectedCategory);
+      const categoryObj = categories.find(c => c.id === selectedCategory);
+      filtered = filtered.filter(a =>
+        a.category === selectedCategory ||
+        (categoryObj && a.category === categoryObj.name)
+      );
     }
 
     if (tagParam) {
-      filtered = filtered.filter(a => a.tags && a.tags.includes(tagParam));
+      filtered = filtered.filter(a => a.tags && (Array.isArray(a.tags) ? a.tags : []).includes(tagParam));
     }
 
     if (searchQuery) {
+      const query = searchQuery.toLowerCase();
       filtered = filtered.filter(a =>
-        a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        a.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (a.tags && a.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())))
+        (a.title || '').toLowerCase().includes(query) ||
+        (a.content || '').toLowerCase().includes(query) ||
+        (a.excerpt || '').toLowerCase().includes(query) ||
+        (a.tags && Array.isArray(a.tags) && a.tags.some(t => (t || '').toLowerCase().includes(query)))
       );
     }
 
@@ -134,7 +140,8 @@ function HomeContent() {
       e.preventDefault();
     }
 
-    const url = `${window.location.origin}/article/${article.id}`;
+    const articleId = article.id || article._id;
+    const url = `${window.location.origin}/article/${articleId}`;
     const watermark = `\n\n📰 Via I Love Shrigonda News - Your trusted source for local news`;
     const text = `${article.title}${watermark}`;
 
@@ -214,15 +221,47 @@ function HomeContent() {
                   animate={{ opacity: 1, y: 0 }}
                   className="absolute right-0 mt-2 w-80 bg-card border rounded-lg shadow-lg p-4 max-h-96 overflow-y-auto"
                 >
-                  <h3 className="font-bold mb-2">Notifications</h3>
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="font-bold">Notifications</h3>
+                    {notifications.length > 0 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs text-muted-foreground h-auto p-0"
+                        onClick={async () => {
+                          try {
+                            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+                            await fetch(`${baseUrl}/api/notifications`, { method: 'DELETE' });
+                            setNotifications([]);
+                          } catch (e) {
+                            console.error('Failed to clear notifications:', e);
+                          }
+                        }}
+                      >
+                        Clear All
+                      </Button>
+                    )}
+                  </div>
                   {notifications.length === 0 ? (
                     <p className="text-sm text-muted-foreground">No new notifications</p>
                   ) : (
                     <div className="space-y-2">
                       {notifications.map(notif => (
-                        <div key={notif.id} className="text-sm p-2 bg-muted rounded">
-                          <p className="font-medium">{notif.title}</p>
-                          <p className="text-muted-foreground">{notif.message}</p>
+                        <div
+                          key={notif.id || notif._id}
+                          className="text-sm p-2 bg-muted rounded cursor-pointer hover:bg-muted/80 transition-colors"
+                          onClick={() => {
+                            if (notif.articleId) {
+                              router.push(`/article/${notif.articleId}`);
+                              setShowNotifications(false);
+                            }
+                          }}
+                        >
+                          <p className="font-medium text-primary">{notif.title}</p>
+                          <p className="text-xs text-muted-foreground">{notif.message}</p>
+                          <p className="text-[10px] text-muted-foreground mt-1">
+                            {new Date(notif.createdAt).toLocaleTimeString()}
+                          </p>
                         </div>
                       ))}
                     </div>
@@ -479,7 +518,7 @@ function HomeContent() {
           <div className="grid md:grid-cols-3 gap-6">
             {trendingArticles.map((article, idx) => (
               <motion.div
-                key={article.id}
+                key={article._id || article.id}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: idx * 0.1 }}
@@ -516,6 +555,27 @@ function HomeContent() {
         </section>
       )}
 
+      {/* No Results Found */}
+      {filteredArticles.length === 0 && (
+        <section className="container py-20">
+          <div className="text-center py-20 bg-muted/10 rounded-xl border-2 border-dashed">
+            <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-20" />
+            <h3 className="text-xl font-semibold mb-2">No articles found</h3>
+            <p className="text-muted-foreground">Try adjusting your search or category filter</p>
+            <Button
+              variant="link"
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedCategory('all');
+              }}
+              className="mt-4 text-primary"
+            >
+              Clear all filters
+            </Button>
+          </div>
+        </section>
+      )}
+
       {/* Recent News */}
       {regularArticles.length > 0 && (
         <section className="container py-12 bg-muted/20">
@@ -523,7 +583,7 @@ function HomeContent() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {regularArticles.map((article, idx) => (
               <motion.div
-                key={article.id}
+                key={article._id || article.id}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.4, delay: idx * 0.05 }}

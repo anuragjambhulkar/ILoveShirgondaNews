@@ -256,7 +256,13 @@ async function handleUpdateArticle(request, articleId) {
     updates.updatedAt = new Date().toISOString();
 
     const news = await getCollection('news');
-    const result = await news.updateOne({ id: articleId }, { $set: updates });
+
+    let query = { id: articleId };
+    if (ObjectId.isValid(articleId)) {
+      query = { $or: [{ _id: new ObjectId(articleId) }, { id: articleId }] };
+    }
+
+    const result = await news.updateOne(query, { $set: updates });
 
     if (result.matchedCount === 0)
       return handleCORS(NextResponse.json({ error: 'Article not found' }, { status: 404 }));
@@ -275,7 +281,13 @@ async function handleDeleteArticle(request, articleId) {
 
   try {
     const news = await getCollection('news');
-    const result = await news.deleteOne({ id: articleId });
+
+    let query = { id: articleId };
+    if (ObjectId.isValid(articleId)) {
+      query = { $or: [{ _id: new ObjectId(articleId) }, { id: articleId }] };
+    }
+
+    const result = await news.deleteOne(query);
 
     if (result.deletedCount === 0)
       return handleCORS(NextResponse.json({ error: 'Article not found' }, { status: 404 }));
