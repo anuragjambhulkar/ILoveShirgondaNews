@@ -60,6 +60,7 @@ try {
 } catch (error) {
     console.error('\n❌ BUILD FAILED');
     console.error(error.message);
+    process.exit(1);
 } finally {
     // 4. Restore everything
     console.log('🔄 Restoring files...');
