@@ -38,6 +38,9 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
           server-dir: ${{ secrets.FTP_TARGET_DIR }}/
+          port: 21
+          # Some shared hosts require 'loose' security to handle passive data ports correctly
+          security: loose
           exclude: |
             **/*
             !shrigonda_news_production.zip
