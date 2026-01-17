@@ -30,20 +30,32 @@ jobs:
           zip -r ../shrigonda_news_production.zip .
           cd ..
 
-      - name: 📤 Upload to FTP (LFTP via Command Line)
+      - name: � Deploy via HTTP (Bypassing FTP)
         run: |
-          # Install LFTP (a more robust FTP client)
-          sudo apt-get update
-          sudo apt-get install -y lftp
+          # Use curl to upload the zip file to our custom PHP handler
+          # This runs over standard HTTPS (Port 443), bypassing all FTP firewall issues.
+          
+          echo "📤 Uploading build to Hostasia..."
+          
+          # Using -s for silent mode but -w to capture status code
+          response=$(curl -s -w "\n%{http_code}" -X POST \
+            -H "X-Deploy-Token: ${{ secrets.DEPLOY_TOKEN }}" \
+            -F "file=@shrigonda_news_production.zip" \
+            "${{ secrets.DEPLOY_URL }}/deploy_handler.php")
 
-          # Upload using LFTP with SSL disabled (Plain FTP) and Active Mode (Passive=false)
-          # "debug 5" enabled to monitor the active connection handshakes.
-          lftp -e "debug 5; set ftp:ssl-allow no; set ssl:verify-certificate no; set ftp:passive-mode false; cd ${{ secrets.FTP_TARGET_DIR }}; put extract.php; put shrigonda_news_production.zip; bye" -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_SERVER }}
+          # Separate Body and Status Code
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
 
-      - name: ⚡ Trigger Extraction & Cleanup
-        run: |
-          # Trigger extraction and tell the script to delete itself and the zip
-          curl -s "${{ secrets.DEPLOY_URL }}/extract.php?run=1&cleanup=1" | grep "Extraction Successful" || (echo "Extraction Failed" && exit 1)
+          echo "Server Response:"
+          echo "$body"
+
+          if [ "$http_code" -ne 200 ]; then
+            echo "❌ Deployment Failed with Status $http_code"
+            exit 1
+          fi
+
+          echo "✅ Deployment Successful!"
 
       - name: 🎉 Success
         run: echo "Deployment finished successfully and server cleaned!"
