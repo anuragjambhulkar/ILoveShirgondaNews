@@ -30,21 +30,15 @@ jobs:
           zip -r ../shrigonda_news_production.zip .
           cd ..
 
-      - name: 📤 Upload to FTP (Zip & Extractor)
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./
-          server-dir: ${{ secrets.FTP_TARGET_DIR }}/
-          port: 21
-          # Some shared hosts require 'loose' security to handle passive data ports correctly
-          security: loose
-          exclude: |
-            **/*
-            !shrigonda_news_production.zip
-            !extract.php
+      - name: 📤 Upload to FTP (LFTP via Command Line)
+        run: |
+          # Install LFTP (a more robust FTP client)
+          sudo apt-get update
+          sudo apt-get install -y lftp
+
+          # Upload using LFTP with SSL disabled (Plain FTP) to avoid firewall timeouts
+          # We use "set ftp:ssl-allow no" to force plain FTP.
+          lftp -e "set ftp:ssl-allow no; set ssl:verify-certificate no; cd ${{ secrets.FTP_TARGET_DIR }}; put extract.php; put shrigonda_news_production.zip; bye" -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_SERVER }}
 
       - name: ⚡ Trigger Extraction & Cleanup
         run: |
