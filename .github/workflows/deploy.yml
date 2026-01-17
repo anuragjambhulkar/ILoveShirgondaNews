@@ -36,9 +36,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y lftp
 
-          # Upload using LFTP with SSL disabled (Plain FTP) to avoid firewall timeouts
-          # We use "set ftp:ssl-allow no" to force plain FTP.
-          lftp -e "set ftp:ssl-allow no; set ssl:verify-certificate no; cd ${{ secrets.FTP_TARGET_DIR }}; put extract.php; put shrigonda_news_production.zip; bye" -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_SERVER }}
+          # Upload using LFTP with SSL disabled (Plain FTP) and explicit Passive Mode
+          # "debug 5" will show us exactly what the server is saying if it freezes again.
+          lftp -e "debug 5; set ftp:ssl-allow no; set ssl:verify-certificate no; set ftp:passive-mode true; cd ${{ secrets.FTP_TARGET_DIR }}; put extract.php; put shrigonda_news_production.zip; bye" -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_SERVER }}
 
       - name: ⚡ Trigger Extraction & Cleanup
         run: |
