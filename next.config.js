@@ -1,5 +1,5 @@
 const nextConfig = {
-  output: 'standalone',
+  output: 'export',
   images: {
     unoptimized: true,
     domains: [], // Add your image domains here
