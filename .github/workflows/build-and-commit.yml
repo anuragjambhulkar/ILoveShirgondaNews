@@ -1,0 +1,49 @@
+name: Build and Commit for cPanel
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'out/**'  # Important: Ignore changes to build folder to prevent loops
+      - '.cpanel.yml'
+      - 'README.md'
+
+permissions:
+  contents: write  # Critical: Allows the Action to push back to the repo
+
+jobs:
+  build-and-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Project
+        run: node scripts/build-static.js ${{ secrets.VERCEL_API_URL }}
+
+      - name: Commit and Push Build Artifacts
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          
+          # Force add the build folder (out)
+          # We use -f because it might be in .gitignore
+          git add -f out
+          
+          # Commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Deploy: Update build artifacts [skip ci]"
+            git push
+          fi
