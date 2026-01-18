@@ -1,7 +1,7 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/iloveshr/news.iloveshrigonda.com/public_html/
+    - export DEPLOYPATH=/home/iloveshr/news.iloveshrigonda.com/
     - export LOGFILE=/home/iloveshr/deploy.log
 
     - echo "=== DEPLOY START $(date) ===" >> $LOGFILE
