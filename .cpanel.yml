@@ -1,5 +1,16 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/iloveshrigonda/public_html
-    - /bin/cp -R out/* $DEPLOYPATH
+    - export DEPLOYPATH=/home/iloveshr/news.iloveshrigonda.com/public_html/
+    - export LOGFILE=/home/iloveshr/deploy.log
+
+    - echo "=== DEPLOY START $(date) ===" >> $LOGFILE
+
+    # Clean old files
+    - /bin/rm -rf $DEPLOYPATH/* >> $LOGFILE 2>&1
+
+    # Deploy pre-built frontend (Next.js 'out' folder)
+    # NOTE: Using 'out' because Next.js static export outputs to this folder
+    - /bin/cp -R out/* $DEPLOYPATH >> $LOGFILE 2>&1
+
+    - echo "=== DEPLOY END $(date) ===" >> $LOGFILE
