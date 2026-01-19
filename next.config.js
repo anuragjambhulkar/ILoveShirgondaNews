@@ -2,7 +2,7 @@ const nextConfig = {
 
   images: {
     unoptimized: true,
-    domains: [], // Add your image domains here
+    domains: ['images.unsplash.com'], // Add your image domains here
   },
   experimental: {
     serverComponentsExternalPackages: ['mongodb'],

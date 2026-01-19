@@ -11,6 +11,15 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 
+// Helper to ensure valid image URLs
+const getImageUrl = (image) => {
+  if (!image) return 'https://images.unsplash.com/photo-1495020689067-958852a7765e';
+  if (image.startsWith('http') || image.startsWith('https')) return image;
+  // Fix for partial Unsplash IDs stored in DB
+  if (image.startsWith('photo-')) return `https://images.unsplash.com/${image}`;
+  return image;
+};
+
 function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -342,7 +351,7 @@ function HomeContent() {
               {/* Background Image with Overlay */}
               <div className="absolute inset-0 z-0">
                 <img
-                  src={currentBreaking.image || 'https://images.unsplash.com/photo-1495020689067-958852a7765e'}
+                  src={getImageUrl(currentBreaking.image)}
                   alt={currentBreaking.title}
                   className="w-full h-full object-cover opacity-40"
                 />
@@ -529,7 +538,7 @@ function HomeContent() {
                 >
                   <div className="relative h-48 overflow-hidden">
                     <img
-                      src={article.image || 'https://images.unsplash.com/photo-1498644035638-2c3357894b10'}
+                      src={getImageUrl(article.image)}
                       alt={article.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
@@ -594,7 +603,7 @@ function HomeContent() {
                 >
                   <div className="relative h-40 overflow-hidden">
                     <img
-                      src={article.image || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c'}
+                      src={getImageUrl(article.image)}
                       alt={article.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
