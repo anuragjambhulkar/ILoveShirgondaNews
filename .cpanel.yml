@@ -6,11 +6,12 @@ deployment:
 
     - echo "=== DEPLOY START $(date) ===" >> $LOGFILE
 
-    # Clean old files
-    - /bin/rm -rf $DEPLOYPATH/* >> $LOGFILE 2>&1
+    # Copy application source files
+    - /bin/cp -R * $DEPLOYPATH >> $LOGFILE 2>&1
 
-    # Deploy pre-built frontend (Next.js 'out' folder)
-    # NOTE: Using 'out' because Next.js static export outputs to this folder
-    - /bin/cp -R out/* $DEPLOYPATH >> $LOGFILE 2>&1
+    # Install dependencies and Build (Modify if server memory is too low)
+    # Note: It's often better to run these manually in cPanel Terminal if they fail here
+    - cd $DEPLOYPATH && npm install >> $LOGFILE 2>&1
+    - cd $DEPLOYPATH && npm run build >> $LOGFILE 2>&1
 
     - echo "=== DEPLOY END $(date) ===" >> $LOGFILE
