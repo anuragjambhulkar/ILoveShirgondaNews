@@ -22,9 +22,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 
+// Fallback image source (Unsplash)
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1495020689067-958852a7765e';
+
 // Helper to ensure valid image URLs
 const getImageUrl = (image) => {
-    if (!image) return 'https://images.unsplash.com/photo-1495020689067-958852a7765e';
+    if (!image) return FALLBACK_IMAGE;
     if (image.startsWith('http') || image.startsWith('https')) return image;
     // Fix for partial Unsplash IDs stored in DB
     if (image.startsWith('photo-')) return `https://images.unsplash.com/${image}`;
@@ -136,7 +139,7 @@ export default function ArticleContent() {
 
             <section className="relative bg-black text-white overflow-hidden">
                 <div className="absolute inset-0 z-0">
-                    <img src={getImageUrl(article.image)} alt={article.title} className="w-full h-full object-cover opacity-40" />
+                    <img src={getImageUrl(article.image)} alt={article.title} onError={(e) => { e.currentTarget.src = FALLBACK_IMAGE; e.currentTarget.onerror = null; }} className="w-full h-full object-cover opacity-40" />
                     <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/80 to-black"></div>
                 </div>
                 <div className="container relative z-10 py-20">
@@ -197,7 +200,7 @@ export default function ArticleContent() {
                                 <motion.div key={related._id} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: i * 0.1 }}>
                                     <Card onClick={() => router.push(`/article/${related._id}`)} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group">
                                         <div className="relative h-48 overflow-hidden">
-                                            <img src={getImageUrl(related.image)} alt={related.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                                            <img src={getImageUrl(related.image)} alt={related.title} onError={(e) => { e.currentTarget.src = FALLBACK_IMAGE; e.currentTarget.onerror = null; }} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
                                             <div className="absolute top-4 left-4"><Badge className="bg-primary text-white">{related.category}</Badge></div>
                                         </div>
                                         <CardContent className="p-6">

@@ -26,9 +26,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 
+// Fallback image source (Unsplash)
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1495020689067-958852a7765e';
+
 // Helper to ensure valid image URLs
 const getImageUrl = (image) => {
-  if (!image) return 'https://images.unsplash.com/photo-1495020689067-958852a7765e';
+  if (!image) return FALLBACK_IMAGE;
   if (image.startsWith('http') || image.startsWith('https')) return image;
   // Fix for partial Unsplash IDs stored in DB
   if (image.startsWith('photo-')) return `https://images.unsplash.com/${image}`;
@@ -343,7 +346,7 @@ export default function AdminDashboard() {
                   />
                   {formData.image && (
                     <div className="relative mt-2 w-full h-64 border rounded-lg overflow-hidden">
-                      <img src={getImageUrl(formData.image)} alt="Preview" className="w-full h-full object-cover" />
+                      <img src={getImageUrl(formData.image)} alt="Preview" onError={(e) => { e.currentTarget.src = FALLBACK_IMAGE; e.currentTarget.onerror = null; }} className="w-full h-full object-cover" />
                       <Button
                         type="button"
                         variant="destructive"

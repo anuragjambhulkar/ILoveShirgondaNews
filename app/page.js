@@ -11,9 +11,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 
+// Fallback image source (Unsplash)
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1495020689067-958852a7765e';
+
 // Helper to ensure valid image URLs
 const getImageUrl = (image) => {
-  if (!image) return 'https://images.unsplash.com/photo-1495020689067-958852a7765e';
+  if (!image) return FALLBACK_IMAGE;
   if (image.startsWith('http') || image.startsWith('https')) return image;
   // Fix for partial Unsplash IDs stored in DB
   if (image.startsWith('photo-')) return `https://images.unsplash.com/${image}`;
@@ -353,6 +356,7 @@ function HomeContent() {
                 <img
                   src={getImageUrl(currentBreaking.image)}
                   alt={currentBreaking.title}
+                  onError={(e) => { e.currentTarget.src = FALLBACK_IMAGE; e.currentTarget.onerror = null; }}
                   className="w-full h-full object-cover opacity-40"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent"></div>
@@ -540,6 +544,7 @@ function HomeContent() {
                     <img
                       src={getImageUrl(article.image)}
                       alt={article.title}
+                      onError={(e) => { e.currentTarget.src = FALLBACK_IMAGE; e.currentTarget.onerror = null; }}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
                     <div className="absolute top-4 left-4">
@@ -605,6 +610,7 @@ function HomeContent() {
                     <img
                       src={getImageUrl(article.image)}
                       alt={article.title}
+                      onError={(e) => { e.currentTarget.src = FALLBACK_IMAGE; e.currentTarget.onerror = null; }}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
                   </div>
