@@ -11,6 +11,7 @@
         "start": "cross-env NODE_ENV=production node server.js",
         "lint": "next lint",
         "lint": "next lint",
+        "install-prod": "npm install --production --no-save --no-audit",
         "postbuild": "echo 'Build completed successfully!'"
     },
     "dependencies": {
