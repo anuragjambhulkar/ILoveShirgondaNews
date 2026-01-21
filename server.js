@@ -1,5 +1,20 @@
 const { createServer } = require('http');
 const { parse } = require('url');
+const fs = require('fs');
+const { execSync } = require('child_process');
+
+// --- SELF-HEALING: Auto-install dependencies if missing ---
+if (!fs.existsSync('./node_modules') || !fs.existsSync('./node_modules/next')) {
+  console.log('📦 node_modules missing. Running "npm install --production"...');
+  try {
+    execSync('npm install --production --no-save --no-audit', { stdio: 'inherit' });
+    console.log('✅ Installation complete.');
+  } catch (err) {
+    console.error('❌ Auto-install failed:', err);
+  }
+}
+// -----------------------------------------------------------
+
 const next = require('next');
 
 const port = parseInt(process.env.PORT || '3000', 10);
