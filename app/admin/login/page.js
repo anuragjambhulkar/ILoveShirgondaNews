@@ -23,24 +23,39 @@ export default function AdminLoginPage() {
 
     try {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+      console.log('Login request to:', `${baseUrl}/api/auth/login`);
+
       const res = await fetch(`${baseUrl}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (parseError) {
+        console.error('Failed to parse response JSON:', parseError);
+        // If JSON parsing fails, it's likely a server HTML error (500/503)
+        if (!res.ok) {
+          throw new Error(`Server Error (${res.status}): The server encountered an issue.`);
+        }
+        throw new Error('Invalid response from server');
+      }
 
       if (res.ok) {
+        console.log('Login successful', data);
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         toast.success('Login successful!');
         router.push('/admin/dashboard');
       } else {
+        console.error('Login failed response:', data);
         toast.error(data.error || 'Login failed');
       }
     } catch (error) {
-      toast.error('An error occurred');
+      console.error('Login error caught:', error);
+      toast.error(error.message || 'An error occurred. Check console for details.');
     } finally {
       setLoading(false);
     }
