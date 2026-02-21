@@ -44,6 +44,12 @@ export default function RootLayout({ children }) {
       <body>
         {children}
         <Toaster position="top-right" richColors closeButton />
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4552438809725483"
+          crossorigin="anonymous"
+          strategy="afterInteractive"
+        />
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-E0YG22BBCQ" strategy="afterInteractive" />
         <Script id="google-analytics" strategy="afterInteractive">
           {`
