@@ -102,13 +102,31 @@ function HomeContent() {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
       const res = await fetch(`${baseUrl}/api/notifications`);
       const data = await res.json();
-      const unreadNotifs = (data.notifications || []).filter(n => !n.read);
+      const allFetched = data.notifications || [];
+
+      // Get read and shown lists from localStorage
+      const readNotifs = JSON.parse(localStorage.getItem('readNotifications') || '[]');
+      const shownNotifs = JSON.parse(localStorage.getItem('shownNotifications') || '[]');
+
+      // Filter out notifications that have been marked as read locally
+      const unreadNotifs = allFetched.filter(n => !readNotifs.includes(n.id || n._id));
+      
       setNotifications(unreadNotifs);
 
-      if (unreadNotifs.length > 0 && notifications.length < unreadNotifs.length) {
-        toast.success('New article published!', {
-          description: unreadNotifs[0].message
-        });
+      if (unreadNotifs.length > 0) {
+        const latestNotif = unreadNotifs[0];
+        const latestId = latestNotif.id || latestNotif._id;
+
+        // Only show toast if this notification hasn't been shown as a popup on this device before
+        if (!shownNotifs.includes(latestId)) {
+          toast.success('New article published!', {
+            description: latestNotif.message
+          });
+
+          // Mark as shown
+          const newShown = [latestId, ...shownNotifs].slice(0, 50); // Keep last 50
+          localStorage.setItem('shownNotifications', JSON.stringify(newShown));
+        }
       }
     } catch (error) {
       console.error('Failed to load notifications:', error);
@@ -181,8 +199,8 @@ function HomeContent() {
 
   const latestArticles = filteredArticles.slice(0, 5);
   const currentBreaking = latestArticles[currentBreakingIndex];
-  const trendingArticles = filteredArticles.slice(5, 8);
-  const regularArticles = filteredArticles.slice(8);
+  const trendingArticles = filteredArticles.slice(0, 6); // Top 6 as trending/prominent
+  const regularArticles = filteredArticles; // Show all in the main list starting from the latest
 
   return (
     <div className="min-h-screen bg-background">
@@ -245,9 +263,14 @@ function HomeContent() {
                         className="text-xs text-muted-foreground h-auto p-0"
                         onClick={async () => {
                           try {
-                            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
-                            await fetch(`${baseUrl}/api/notifications`, { method: 'DELETE' });
+                            // Instead of deleting from server (which affects everyone), 
+                            // we mark all current as read locally
+                            const currentIds = notifications.map(n => n.id || n._id);
+                            const readNotifs = JSON.parse(localStorage.getItem('readNotifications') || '[]');
+                            const newRead = Array.from(new Set([...readNotifs, ...currentIds]));
+                            localStorage.setItem('readNotifications', JSON.stringify(newRead));
                             setNotifications([]);
+                            toast.info('Notifications cleared locally');
                           } catch (e) {
                             console.error('Failed to clear notifications:', e);
                           }
@@ -267,8 +290,18 @@ function HomeContent() {
                           className="text-sm p-2 bg-muted rounded cursor-pointer hover:bg-muted/80 transition-colors"
                           onClick={() => {
                             if (notif.articleId) {
+                              // Mark as read locally when clicked
+                              const readNotifs = JSON.parse(localStorage.getItem('readNotifications') || '[]');
+                              if (!readNotifs.includes(notif.id || notif._id)) {
+                                const newRead = [...readNotifs, notif.id || notif._id];
+                                localStorage.setItem('readNotifications', JSON.stringify(newRead));
+                              }
+                              
                               router.push(`/article/${notif.articleId}`);
                               setShowNotifications(false);
+                              
+                              // Update local state immediately
+                              setNotifications(prev => prev.filter(n => (n.id || n._id) !== (notif.id || notif._id)));
                             }
                           }}
                         >
