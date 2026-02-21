@@ -5,6 +5,11 @@ import Script from 'next/script';
 export const metadata = {
   title: 'I Love Shrigonda News - Your Love for the City',
   description: 'Stay updated with the latest news from Shrigonda and beyond',
+  icons: {
+    icon: 'https://customer-assets.emergentagent.com/job_754a0040-d589-4dfd-90f1-615496373220/artifacts/7inmznbe_logo.jpg',
+    shortcut: 'https://customer-assets.emergentagent.com/job_754a0040-d589-4dfd-90f1-615496373220/artifacts/7inmznbe_logo.jpg',
+    apple: 'https://customer-assets.emergentagent.com/job_754a0040-d589-4dfd-90f1-615496373220/artifacts/7inmznbe_logo.jpg',
+  },
 };
 
 export default function RootLayout({ children }) {
