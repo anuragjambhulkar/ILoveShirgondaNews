@@ -1,4 +1,4 @@
-// File: C:\Users\jambh\Desktop\FreeLanceing\TestingNews\app\admin\dashboard\page.js
+// File: C:\Users\jambh\Desktop\Personal\FreeLanceing\TestingNews\app\admin\dashboard\page.js
 import * as entry from '../../../../../app/admin/dashboard/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
