@@ -1,3 +1,6 @@
+import { NextResponse } from 'next/server';
+import { writeFile, mkdir } from 'fs/promises';
+import path from 'path';
 import { extractToken, verifyToken } from '@/lib/auth';
 
 // Add CORS headers
