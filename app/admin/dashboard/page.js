@@ -99,7 +99,8 @@ export default function AdminDashboard() {
 
       if (res.ok) {
         const data = await res.json();
-        setArticles(data.articles || []);
+        const sorted = (data.articles || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setArticles(sorted);
       }
     } catch (error) {
       console.error('Failed to load articles:', error);
