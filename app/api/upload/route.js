@@ -1,7 +1,4 @@
-import { NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
-import path from 'path';
-import { mkdir } from 'fs/promises';
+import { extractToken, verifyToken } from '@/lib/auth';
 
 // Add CORS headers
 function handleCORS(response) {
@@ -17,6 +14,15 @@ export async function OPTIONS() {
 }
 
 export async function POST(request) {
+  // Authentication check
+  const token = extractToken(request);
+  const decoded = verifyToken(token);
+
+  if (!decoded || (decoded.role !== 'admin' && decoded.role !== 'editor')) {
+    const res = NextResponse.json({ success: false, error: 'Unauthorized. Only admins and editors can upload images.' }, { status: 401 });
+    return handleCORS(res);
+  }
+
   try {
     const data = await request.formData();
     const file = data.get('file');

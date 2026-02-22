@@ -120,9 +120,13 @@ export default function AdminDashboard() {
     uploadFormData.append('file', file);
 
     try {
+      const token = localStorage.getItem('token');
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
       const res = await fetch(`${baseUrl}/api/upload`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: uploadFormData,
       });
 
