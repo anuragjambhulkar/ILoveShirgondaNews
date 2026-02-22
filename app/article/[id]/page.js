@@ -30,6 +30,7 @@ export async function generateMetadata({ params }) {
     const getImageUrl = (image) => {
       if (!image) return FALLBACK_IMAGE;
       if (image.startsWith('http') || image.startsWith('https')) return image;
+      if (image.startsWith('/')) return image; // Handle local upload paths
       if (image.startsWith('photo-')) return `https://images.unsplash.com/${image}`;
       if (/^[a-zA-Z0-9_-]+$/.test(image)) return `https://images.unsplash.com/photo-${image}`;
       return FALLBACK_IMAGE;

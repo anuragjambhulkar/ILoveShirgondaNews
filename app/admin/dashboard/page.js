@@ -33,8 +33,10 @@ const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1495020689067-958852a7
 const getImageUrl = (image) => {
   if (!image) return FALLBACK_IMAGE;
   if (image.startsWith('http') || image.startsWith('https')) return image;
+  if (image.startsWith('/')) return image; // Handle local upload paths
   // Fix for partial Unsplash IDs stored in DB
   if (image.startsWith('photo-')) return `https://images.unsplash.com/${image}`;
+
   return image;
 };
 

@@ -19,10 +19,12 @@ const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1495020689067-958852a7
 const getImageUrl = (image) => {
   if (!image) return FALLBACK_IMAGE;
   if (image.startsWith('http') || image.startsWith('https')) return image;
+  if (image.startsWith('/')) return image; // Handle local upload paths
   // Fix for partial Unsplash IDs stored in DB
   if (image.startsWith('photo-')) return `https://images.unsplash.com/${image}`;
-  // Fix for raw IDs (alphanumeric, no slashes)
+  // Fix for raw IDs (alphanumeric, no slashes or dots)
   if (/^[a-zA-Z0-9_-]+$/.test(image)) return `https://images.unsplash.com/photo-${image}`;
+
   return FALLBACK_IMAGE;
 };
 
@@ -110,7 +112,7 @@ function HomeContent() {
 
       // Filter out notifications that have been marked as read locally
       const unreadNotifs = allFetched.filter(n => !readNotifs.includes(n.id || n._id));
-      
+
       setNotifications(unreadNotifs);
 
       if (unreadNotifs.length > 0) {
@@ -296,10 +298,10 @@ function HomeContent() {
                                 const newRead = [...readNotifs, notif.id || notif._id];
                                 localStorage.setItem('readNotifications', JSON.stringify(newRead));
                               }
-                              
+
                               router.push(`/article/${notif.articleId}`);
                               setShowNotifications(false);
-                              
+
                               // Update local state immediately
                               setNotifications(prev => prev.filter(n => (n.id || n._id) !== (notif.id || notif._id)));
                             }

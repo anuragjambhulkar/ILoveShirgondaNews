@@ -30,12 +30,12 @@ const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1495020689067-958852a7
 const getImageUrl = (image) => {
     if (!image) return FALLBACK_IMAGE;
     if (image.startsWith('http') || image.startsWith('https')) return image;
+    if (image.startsWith('/')) return image; // Handle local upload paths
     // Fix for partial Unsplash IDs stored in DB
     if (image.startsWith('photo-')) return `https://images.unsplash.com/${image}`;
-    // Fix for raw IDs (alphanumeric, no slashes)
+    // Fix for raw IDs (alphanumeric, no slashes or dots)
     if (/^[a-zA-Z0-9_-]+$/.test(image)) return `https://images.unsplash.com/photo-${image}`;
-    // If it looks like a path but not absolute, treat as relative or fallback?
-    // Safer to fallback to prevent CORB on 404s
+
     return FALLBACK_IMAGE;
 };
 
