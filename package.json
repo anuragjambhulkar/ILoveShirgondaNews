@@ -10,7 +10,6 @@
         "build": "next build",
         "start": "cross-env NODE_ENV=production node server.js",
         "lint": "next lint",
-        "lint": "next lint",
         "install-prod": "npm install --production --no-save --no-audit",
         "postbuild": "echo 'Build completed successfully!'"
     },
@@ -47,6 +46,7 @@
         "axios": "^1.10.0",
         "bcryptjs": "^3.0.2",
         "class-variance-authority": "^0.7.1",
+        "cloudinary": "^2.9.0",
         "clsx": "^2.1.1",
         "cmdk": "^1.1.1",
         "date-fns": "^4.1.0",

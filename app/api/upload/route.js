@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
+import { v2 as cloudinary } from 'cloudinary';
 import { extractToken, verifyToken } from '@/lib/auth';
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // Add CORS headers
 function handleCORS(response) {
@@ -42,31 +48,33 @@ export async function POST(request) {
       return handleCORS(res);
     }
 
-    // Validate file size (max 5MB)
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    if (file.size > maxSize) {
-      const res = NextResponse.json({ success: false, error: 'File size exceeds 5MB limit.' }, { status: 400 });
-      return handleCORS(res);
-    }
-
+    // Convert file to Buffer then to Base64
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
+    const base64Image = `data:${file.type};base64,${buffer.toString('base64')}`;
 
-    // Create a unique filename with sanitized name
-    const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const filename = `${Date.now()}-${sanitizedName}`;
-    const uploadsDir = path.join(process.cwd(), 'public/uploads');
-    const imagePath = path.join(uploadsDir, filename);
+    // Upload to Cloudinary
+    const uploadResponse = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload(
+        base64Image,
+        {
+          folder: 'shrigonda_news',
+          resource_type: 'auto',
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+    });
 
-    // Make sure the uploads directory exists
-    await mkdir(uploadsDir, { recursive: true });
+    console.log(`✅ File uploaded to Cloudinary: ${uploadResponse.secure_url}`);
 
-    await writeFile(imagePath, buffer);
-    console.log(`✅ File uploaded successfully: ${imagePath}`);
-
-    const imageUrl = `/uploads/${filename}`;
-
-    const res = NextResponse.json({ success: true, url: imageUrl, filename });
+    const res = NextResponse.json({
+      success: true,
+      url: uploadResponse.secure_url,
+      public_id: uploadResponse.public_id
+    });
     return handleCORS(res);
   } catch (error) {
     console.error('❌ Upload error:', error);
