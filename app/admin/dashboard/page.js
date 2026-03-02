@@ -60,6 +60,20 @@ export default function AdminDashboard() {
     checkAuth();
     loadCategories();
     loadArticles();
+
+    // Check for recovered draft from expired session
+    const draft = localStorage.getItem('draftArticle');
+    if (draft) {
+      try {
+        const parsedDraft = JSON.parse(draft);
+        setFormData(parsedDraft);
+        setShowEditor(true);
+        localStorage.removeItem('draftArticle');
+        toast.info('Recovered your unsaved article draft.');
+      } catch (e) {
+        console.error('Failed to parse draft', e);
+      }
+    }
   }, []);
 
   const checkAuth = () => {
@@ -101,6 +115,8 @@ export default function AdminDashboard() {
         const data = await res.json();
         const sorted = (data.articles || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setArticles(sorted);
+      } else if (res.status === 401) {
+        handleLogout();
       }
     } catch (error) {
       console.error('Failed to load articles:', error);
@@ -137,6 +153,12 @@ export default function AdminDashboard() {
         setFormData({ ...formData, image: data.url });
         toast.success('Image uploaded successfully!');
       } else {
+        if (res.status === 401) {
+          localStorage.setItem('draftArticle', JSON.stringify(formData));
+          toast.error('Session expired. Please log in again.');
+          handleLogout();
+          return;
+        }
         toast.error(data.error || 'Image upload failed.');
       }
     } catch (error) {
@@ -180,6 +202,12 @@ export default function AdminDashboard() {
         });
         loadArticles();
       } else {
+        if (res.status === 401) {
+          localStorage.setItem('draftArticle', JSON.stringify(formData));
+          toast.error('Session expired. Please log in again.');
+          handleLogout();
+          return;
+        }
         const data = await res.json();
         toast.error(data.error || 'Failed to save article');
       }
@@ -218,6 +246,11 @@ export default function AdminDashboard() {
         toast.success('Article deleted');
         loadArticles();
       } else {
+        if (res.status === 401) {
+          toast.error('Session expired. Please log in again.');
+          handleLogout();
+          return;
+        }
         toast.error('Failed to delete article');
       }
     } catch (error) {
